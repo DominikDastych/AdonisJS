@@ -5,7 +5,7 @@ import { USER_ROLES } from '#models/user'
  * Fields shared by the create and update forms of the
  * user administration.
  */
-const fullName = () => vine.string().trim().maxLength(255).nullable()
+const fullName = () => vine.string().trim().maxLength(255).nullable().optional()
 const role = () => vine.enum(USER_ROLES)
 const isActive = () => vine.boolean().optional()
 

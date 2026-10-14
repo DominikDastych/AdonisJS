@@ -26,7 +26,9 @@ export default class UsersController {
       .if(filters.search, (query) => {
         const term = `%${filters.search!.toLowerCase()}%`
         query.where((group) => {
-          group.whereRaw('lower(email) like ?', [term]).orWhereRaw('lower(full_name) like ?', [term])
+          group
+            .whereRaw('lower(email) like ?', [term])
+            .orWhereRaw('lower(full_name) like ?', [term])
         })
       })
       .if(filters.role, (query) => query.where('role', filters.role!))
@@ -79,7 +81,7 @@ export default class UsersController {
     const payload = await request.validateUsing(createUserValidator)
 
     const user = await User.create({
-      fullName: payload.fullName,
+      fullName: payload.fullName ?? null,
       email: payload.email,
       password: payload.password,
       role: payload.role,
@@ -116,7 +118,7 @@ export default class UsersController {
     }
 
     user.merge({
-      fullName: payload.fullName,
+      fullName: payload.fullName ?? null,
       email: payload.email,
       role: payload.role,
       isActive,
