@@ -20,6 +20,17 @@ export default class AuthMiddleware {
     } = {}
   ) {
     await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
+
+    /**
+     * Users deactivated by an administrator lose access immediately,
+     * even when they still hold a valid session.
+     */
+    if (!ctx.auth.user!.isActive) {
+      await ctx.auth.use('web').logout()
+      ctx.session.flash('error', 'Váš účet byl deaktivován.')
+      return ctx.response.redirect(this.redirectTo)
+    }
+
     return next()
   }
 }

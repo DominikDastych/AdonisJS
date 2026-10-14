@@ -1,0 +1,70 @@
+{{--
+  Fields shared by the create and edit forms. Expects "roles" and,
+  when editing, the "user" being edited.
+--}}
+@let(editing = !!user)
+@let(submitted = flashMessages.has('email'))
+@let(currentRole = old('role') || (editing ? user.role : 'user'))
+@let(isActiveChecked = submitted ? !!old('isActive') : (editing ? user.isActive : true))
+
+<div class="form-grid">
+  @field.root({ name: 'fullName' })
+    @!field.label({ text: 'Celé jméno' })
+    @!input.control({ placeholder: 'Jan Novák', value: editing ? user.fullName : '' })
+    @!field.error()
+  @end
+
+  @field.root({ name: 'email' })
+    @!field.label({ text: 'E-mail' })
+    @!input.control({
+      type: 'email',
+      placeholder: 'jan.novak@example.com',
+      required: true,
+      value: editing ? user.email : '',
+    })
+    @!field.error()
+  @end
+
+  @field.root({ name: 'password' })
+    @!field.label({ text: editing ? 'Nové heslo' : 'Heslo' })
+    @!input.control({
+      type: 'password',
+      autocomplete: 'new-password',
+      placeholder: editing ? 'Ponechte prázdné pro zachování' : '••••••••',
+      required: !editing,
+    })
+    @!field.error()
+  @end
+
+  @field.root({ name: 'passwordConfirmation' })
+    @!field.label({ text: 'Potvrzení hesla' })
+    @!input.control({
+      type: 'password',
+      autocomplete: 'new-password',
+      placeholder: '••••••••',
+      required: !editing,
+    })
+    @!field.error()
+  @end
+
+  @field.root({ name: 'role' })
+    @!field.label({ text: 'Role' })
+    @!select.control({
+      class: 'field__input select',
+      options: roles.map((role) => ({
+        value: role,
+        name: role === 'admin' ? 'Administrátor' : 'Uživatel',
+        isSelected: role === currentRole,
+      })),
+    })
+    @!field.error()
+  @end
+
+  <div class="field">
+    <span class="field__label">Stav účtu</span>
+    <label class="check" style="height: 40px;">
+      <input type="checkbox" name="isActive" value="true" {{ isActiveChecked ? 'checked' : '' }} />
+      Účet je aktivní (uživatel se může přihlásit)
+    </label>
+  </div>
+</div>

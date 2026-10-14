@@ -1,0 +1,166 @@
+@layouts.app({ title: 'Uživatelé' })
+  @page({ title: 'Uživatelé', description: 'Správa uživatelských účtů, rolí a přístupů.' })
+    @slot('actions')
+      @link({ route: 'admin.users.create', class: 'btn btn--primary btn--sm' })
+        @svg('lucide:user-plus', { width: 15, height: 15 })
+        Nový uživatel
+      @end
+    @end
+
+    <div class="stats">
+      <div class="stat">
+        <div class="tag">Celkem</div>
+        <div class="stat__value">{{ stats.total }}</div>
+      </div>
+      <div class="stat">
+        <div class="tag">Aktivní</div>
+        <div class="stat__value">{{ stats.active }}</div>
+      </div>
+      <div class="stat">
+        <div class="tag">Administrátoři</div>
+        <div class="stat__value">{{ stats.admins }}</div>
+      </div>
+    </div>
+
+    <form method="GET" action="{{ urlFor('admin.users.index') }}" class="filters" role="search">
+      <input
+        class="field__input filters__search"
+        type="search"
+        name="search"
+        value="{{ filters.search ?? '' }}"
+        placeholder="Hledat podle jména nebo e-mailu…"
+        aria-label="Hledat"
+      />
+      <select class="field__input select" name="role" aria-label="Role">
+        <option value="">Všechny role</option>
+        @each(role in roles)
+          <option value="{{ role }}" {{ filters.role === role ? 'selected' : '' }}>
+            {{ role === 'admin' ? 'Administrátor' : 'Uživatel' }}
+          </option>
+        @end
+      </select>
+      <select class="field__input select" name="status" aria-label="Stav">
+        <option value="">Všechny stavy</option>
+        <option value="active" {{ filters.status === 'active' ? 'selected' : '' }}>Aktivní</option>
+        <option value="inactive" {{ filters.status === 'inactive' ? 'selected' : '' }}>Neaktivní</option>
+      </select>
+      <button type="submit" class="btn btn--secondary btn--sm">
+        @svg('lucide:search', { width: 15, height: 15 })
+        Filtrovat
+      </button>
+      @if(filters.search || filters.role || filters.status)
+        @link({ route: 'admin.users.index', class: 'btn btn--ghost btn--sm' })
+          Zrušit filtry
+        @end
+      @end
+    </form>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Uživatel</th>
+            <th>Role</th>
+            <th>Stav</th>
+            <th>Vytvořen</th>
+            <th><span class="sr-only">Akce</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(user in users)
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <span class="user-cell__avatar">{{ user.initials }}</span>
+                  <div>
+                    <div class="user-cell__name">
+                      @link({ route: 'admin.users.show', routeParams: { id: user.id }, class: 'il' })
+                        {{ user.fullName ?? '—' }}
+                      @end
+                      @if(user.id === auth.user.id)
+                        <span class="badge">Vy</span>
+                      @end
+                    </div>
+                    <div class="user-cell__email">{{ user.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                @if(user.isAdmin)
+                  <span class="badge badge--admin">Administrátor</span>
+                @else
+                  <span class="badge">Uživatel</span>
+                @end
+              </td>
+              <td>
+                @if(user.isActive)
+                  <span class="badge badge--ok">Aktivní</span>
+                @else
+                  <span class="badge badge--off">Neaktivní</span>
+                @end
+              </td>
+              <td class="mono" style="font-size: 13px; color: var(--muted);">
+                {{ user.createdAt.toFormat('d. M. yyyy') }}
+              </td>
+              <td>
+                <div class="table__actions">
+                  @link({
+                    route: 'admin.users.edit',
+                    routeParams: { id: user.id },
+                    class: 'btn btn--secondary btn--sm',
+                    title: 'Upravit',
+                  })
+                    @svg('lucide:pencil', { width: 14, height: 14 })
+                  @end
+                  @if(user.id !== auth.user.id)
+                    @form({ route: 'admin.users.toggle_status', routeParams: { id: user.id } })
+                      <button
+                        type="submit"
+                        class="btn btn--secondary btn--sm"
+                        title="{{ user.isActive ? 'Deaktivovat' : 'Aktivovat' }}"
+                      >
+                        @svg(user.isActive ? 'lucide:user-x' : 'lucide:user-check', { width: 14, height: 14 })
+                      </button>
+                    @end
+                    @form({
+                      route: 'admin.users.destroy',
+                      routeParams: { id: user.id },
+                      'data-email': user.email,
+                      'x-data': '',
+                      'x-on:submit': "if (!confirm(`Opravdu smazat uživatele ${$el.dataset.email}?`)) $event.preventDefault()",
+                    })
+                      <button type="submit" class="btn btn--secondary btn--sm" title="Smazat">
+                        @svg('lucide:trash-2', { width: 14, height: 14 })
+                      </button>
+                    @end
+                  @end
+                </div>
+              </td>
+            </tr>
+          @else
+            <tr>
+              <td colspan="5" class="table__empty">Žádní uživatelé neodpovídají zadaným filtrům.</td>
+            </tr>
+          @end
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <span>
+        Zobrazeno {{ users.all().length }} z {{ users.total }} uživatelů
+      </span>
+      @if(users.hasPages)
+        <nav class="pagination__links" aria-label="Stránkování">
+          @each(link in users.getUrlsForRange(1, users.lastPage))
+            <a
+              href="{{ link.url }}"
+              class="btn btn--secondary btn--sm"
+              {{ link.isActive ? 'aria-current=page' : '' }}
+            >{{ link.page }}</a>
+          @end
+        </nav>
+      @end
+    </div>
+  @end
+@end

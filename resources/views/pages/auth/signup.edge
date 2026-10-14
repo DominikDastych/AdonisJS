@@ -1,6 +1,6 @@
 @layouts.auth()
-  <h1 class="auth__title">Create your account</h1>
-  <p class="auth__sub">Start building with the starter kit.</p>
+  <h1 class="auth__title">Vytvořte si účet</h1>
+  <p class="auth__sub">Registrace nového uživatele.</p>
   @form({
     route: 'new_account.store',
     method: 'POST',
@@ -9,12 +9,12 @@
     'x-on:submit': 'submitting = true',
   })
     @field.root({ name: 'fullName' })
-      @!field.label({ text: 'Full name' })
-      @!input.control({ autocomplete: 'name', placeholder: 'Ada Lovelace' })
+      @!field.label({ text: 'Celé jméno' })
+      @!input.control({ autocomplete: 'name', placeholder: 'Jan Novák' })
       @!field.error()
     @end
     @field.root({ name: 'email' })
-      @!field.label({ text: 'Email' })
+      @!field.label({ text: 'E-mail' })
       @!input.control({
         type: 'email',
         autocomplete: 'email',
@@ -23,7 +23,7 @@
       @!field.error()
     @end
     @field.root({ name: 'password' })
-      @!field.label({ text: 'Password' })
+      @!field.label({ text: 'Heslo' })
       @!input.control({
         type: 'password',
         autocomplete: 'new-password',
@@ -32,7 +32,7 @@
       @!field.error()
     @end
     @field.root({ name: 'passwordConfirmation' })
-      @!field.label({ text: 'Confirm password' })
+      @!field.label({ text: 'Potvrzení hesla' })
       @!input.control({
         type: 'password',
         autocomplete: 'new-password',
@@ -41,21 +41,21 @@
       @!field.error()
     @end
     @!button({
-      text: 'Create account',
+      text: 'Vytvořit účet',
       type: 'submit',
       block: true,
       style: 'margin-top: 4px;',
       'x-bind:disabled': 'submitting',
-      'x-text': "submitting ? 'One moment…' : 'Create account'",
+      'x-text': "submitting ? 'Okamžik…' : 'Vytvořit účet'",
     })
   @end
 
   <p class="auth__foot">
     
-    Already have an account?
+    Už máte účet?
 
     @link({ route: 'session.create', class: 'il' })
-      Sign in
+      Přihlaste se
     @end
   </p>
 @end

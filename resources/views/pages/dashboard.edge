@@ -1,17 +1,31 @@
-@layouts.app({ title: 'Dashboard' })
-  @page()
+@layouts.app({ title: 'Přehled' })
+  @page({
+    title: `Vítejte, ${auth.user.fullName ?? auth.user.email}`,
+    description: auth.user.isAdmin
+      ? 'Jste přihlášen(a) jako administrátor.'
+      : 'Jste přihlášen(a) jako běžný uživatel.',
+  })
     <div class="empty">
       <div class="empty__mark">
-        @svg('lucide:layout-grid', { width: 22, height: 22 })
+        @svg(auth.user.isAdmin ? 'lucide:shield-check' : 'lucide:user', { width: 22, height: 22 })
       </div>
-      <h1>Your dashboard is ready</h1>
-      <p>
-        It's empty on purpose. A clean starting point with nothing to undo. Add your first route and component to begin.
-      </p>
-      <p class="mono" style="font-size: 12.5px; color: var(--subtle); margin-top: 4px;">
-        Start in
-        <span class="kbd">resources/views/pages/dashboard.edge</span>
-      </p>
+      @if(auth.user.isAdmin)
+        <h1>Správa uživatelů</h1>
+        <p>
+          V administraci můžete uživatele vyhledávat, vytvářet, upravovat, deaktivovat a mazat.
+        </p>
+        <p style="margin-top: 12px;">
+          @link({ route: 'admin.users.index', class: 'btn btn--primary' })
+            @svg('lucide:users', { width: 15, height: 15 })
+            Otevřít administraci
+          @end
+        </p>
+      @else
+        <h1>Váš účet je aktivní</h1>
+        <p>
+          Administraci uživatelů mohou používat pouze administrátoři.
+        </p>
+      @end
     </div>
   @end
 @end

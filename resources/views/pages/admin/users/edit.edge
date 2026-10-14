@@ -1,0 +1,20 @@
+@layouts.app({ title: 'Upravit uživatele' })
+  @page({ title: 'Upravit uživatele', description: user.email })
+    @slot('actions')
+      @link({ route: 'admin.users.show', routeParams: { id: user.id }, class: 'btn btn--secondary btn--sm' })
+        @svg('lucide:eye', { width: 15, height: 15 })
+        Detail
+      @end
+    @end
+
+    @form({ route: 'admin.users.update', routeParams: { id: user.id }, class: 'panel' })
+      @include('pages/admin/users/_form')
+      <div class="form-actions">
+        @link({ route: 'admin.users.index', class: 'btn btn--secondary' })
+          Zrušit
+        @end
+        @!button({ text: 'Uložit změny', type: 'submit' })
+      </div>
+    @end
+  @end
+@end

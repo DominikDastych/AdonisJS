@@ -1,0 +1,76 @@
+@let(isSelf = user.id === auth.user.id)
+@layouts.app({ title: user.fullName ?? user.email })
+  @page({ title: user.fullName ?? user.email, description: 'Detail uživatele' })
+    @slot('actions')
+      @link({ route: 'admin.users.index', class: 'btn btn--secondary btn--sm' })
+        @svg('lucide:arrow-left', { width: 15, height: 15 })
+        Zpět na seznam
+      @end
+      @link({ route: 'admin.users.edit', routeParams: { id: user.id }, class: 'btn btn--primary btn--sm' })
+        @svg('lucide:pencil', { width: 15, height: 15 })
+        Upravit
+      @end
+    @end
+
+    <div class="panel">
+      <dl class="details">
+        <dt>ID</dt>
+        <dd class="mono">{{ user.id }}</dd>
+        <dt>Celé jméno</dt>
+        <dd>{{ user.fullName ?? '—' }}</dd>
+        <dt>E-mail</dt>
+        <dd>{{ user.email }}</dd>
+        <dt>Role</dt>
+        <dd>
+          @if(user.isAdmin)
+            <span class="badge badge--admin">Administrátor</span>
+          @else
+            <span class="badge">Uživatel</span>
+          @end
+        </dd>
+        <dt>Stav</dt>
+        <dd>
+          @if(user.isActive)
+            <span class="badge badge--ok">Aktivní</span>
+          @else
+            <span class="badge badge--off">Neaktivní</span>
+          @end
+        </dd>
+        <dt>Vytvořen</dt>
+        <dd>{{ user.createdAt.setLocale('cs').toFormat('d. M. yyyy HH:mm') }}</dd>
+        <dt>Naposledy upraven</dt>
+        <dd>{{ user.updatedAt ? user.updatedAt.setLocale('cs').toFormat('d. M. yyyy HH:mm') : '—' }}</dd>
+        <dt>Poslední přihlášení</dt>
+        <dd>{{ user.lastLoginAt ? user.lastLoginAt.setLocale('cs').toRelative() : 'Nikdy' }}</dd>
+      </dl>
+    </div>
+
+    @if(!isSelf)
+      <div class="panel danger-zone">
+        @section({
+          title: 'Správa účtu',
+          description: 'Deaktivovaný uživatel se nemůže přihlásit. Smazání je nevratné.',
+        })
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            @form({ route: 'admin.users.toggle_status', routeParams: { id: user.id } })
+              @!button({
+                text: user.isActive ? 'Deaktivovat účet' : 'Aktivovat účet',
+                type: 'submit',
+                variant: 'secondary',
+              })
+            @end
+            @form({
+              route: 'admin.users.destroy',
+              routeParams: { id: user.id },
+              'data-email': user.email,
+              'x-data': '',
+              'x-on:submit': "if (!confirm(`Opravdu smazat uživatele ${$el.dataset.email}?`)) $event.preventDefault()",
+            })
+              @!button({ text: 'Smazat uživatele', type: 'submit', variant: 'danger' })
+            @end
+          </div>
+        @end
+      </div>
+    @end
+  @end
+@end

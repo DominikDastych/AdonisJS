@@ -29,3 +29,17 @@ router
     router.post('logout', [controllers.Session, 'destroy'])
   })
   .use(middleware.auth())
+
+/**
+ * User administration, available to administrators only
+ */
+router
+  .group(() => {
+    router.resource('users', controllers.admin.Users)
+    router
+      .post('users/:id/toggle-status', [controllers.admin.Users, 'toggleStatus'])
+      .as('users.toggle_status')
+  })
+  .prefix('admin')
+  .as('admin')
+  .use([middleware.auth(), middleware.admin()])

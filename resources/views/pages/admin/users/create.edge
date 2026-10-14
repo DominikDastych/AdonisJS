@@ -1,0 +1,13 @@
+@layouts.app({ title: 'Nový uživatel' })
+  @page({ title: 'Nový uživatel', description: 'Vytvořte účet a přidělte mu roli.' })
+    @form({ route: 'admin.users.store', method: 'POST', class: 'panel' })
+      @include('pages/admin/users/_form')
+      <div class="form-actions">
+        @link({ route: 'admin.users.index', class: 'btn btn--secondary' })
+          Zrušit
+        @end
+        @!button({ text: 'Vytvořit uživatele', type: 'submit' })
+      </div>
+    @end
+  @end
+@end

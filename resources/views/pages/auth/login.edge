@@ -1,6 +1,6 @@
 @layouts.auth()
-  <h1 class="auth__title">Welcome back</h1>
-  <p class="auth__sub">Sign in to continue building.</p>
+  <h1 class="auth__title">Vítejte zpět</h1>
+  <p class="auth__sub">Přihlaste se ke svému účtu.</p>
   @form({
     route: 'session.store',
     method: 'POST',
@@ -9,7 +9,7 @@
     'x-on:submit': 'submitting = true',
   })
     @field.root({ name: 'email' })
-      @!field.label({ text: 'Email' })
+      @!field.label({ text: 'E-mail' })
       @!input.control({
         type: 'email',
         autocomplete: 'username',
@@ -18,7 +18,7 @@
       @!field.error()
     @end
     @field.root({ name: 'password' })
-      @!field.label({ text: 'Password' })
+      @!field.label({ text: 'Heslo' })
       @!input.control({
         type: 'password',
         autocomplete: 'current-password',
@@ -27,23 +27,23 @@
       @!field.error()
     @end
     @!button({
-      text: 'Sign in',
+      text: 'Přihlásit se',
       type: 'submit',
       block: true,
       style: 'margin-top: 4px;',
       'x-bind:disabled': 'submitting',
-      'x-text': "submitting ? 'One moment…' : 'Sign in'",
+      'x-text': "submitting ? 'Okamžik…' : 'Přihlásit se'",
     })
   @end
 
   <p class="auth__foot">
     
 
-    New here?
+    Nemáte účet?
 
 
     @link({ route: 'new_account.create', class: 'il' })
-      Create an account
+      Zaregistrujte se
     @end
   </p>
 @end
